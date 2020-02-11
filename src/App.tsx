@@ -1,5 +1,5 @@
 import React from 'react';
-import { Option } from 'fp-ts/lib/Option'
+import { fromNullable } from 'fp-ts/lib/Option'
 
 const SESSION_KEY: string = `TEST_KEY`;
 
@@ -12,22 +12,24 @@ class App extends React.PureComponent<{}, { value: string }> {
     };
   }
 
-  handleChangeStorage = (value: string) => {
+  handleChangeStorage = (value: string):void => {
     sessionStorage.setItem(SESSION_KEY, value);
     this.setState({value});
   };
 
-  handleShowStorage = () => {
-    const value: string | null = sessionStorage.getItem(SESSION_KEY);
-    if (value === null) {
-      return `value is null`
-    } else {
-      return `value: ${value}, type: ${typeof value}`
-    }
+  handleShowStorage = ():string => {
+    const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY))
+        .map((item: string) => item)
+        // вот тут ошибка с map
+        // TS2339: Property 'map' does not exist on type 'Option<string>'.   Property 'map' does not exist on type 'None'
+        .getOrElse(`there is nothing`)
 
+    // if (value === null) {
+    //   return `there is nothing`
+    // }
 
+    return `value: ${optionalValue}, type: ${typeof optionalValue}`
   };
-
 
   render() {
     return (
@@ -40,9 +42,7 @@ class App extends React.PureComponent<{}, { value: string }> {
                 onChange={(e) => this.handleChangeStorage(e.target.value)}
                 value={this.state.value}
             />
-
           </fieldset>
-
           <p>{this.handleShowStorage()}</p>
         </div>
     );
