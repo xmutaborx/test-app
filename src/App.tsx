@@ -1,5 +1,6 @@
 import React from 'react';
-import { fromNullable } from 'fp-ts/lib/Option'
+import { fromNullable } from "fp-ts/lib/Option";
+import * as O from 'fp-ts/lib/Option'
 
 const SESSION_KEY: string = `TEST_KEY`;
 
@@ -19,14 +20,7 @@ class App extends React.PureComponent<{}, { value: string }> {
 
   handleShowStorage = ():string => {
     const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY))
-        .map((item: string) => item)
-        // вот тут ошибка с map
-        // TS2339: Property 'map' does not exist on type 'Option<string>'.   Property 'map' does not exist on type 'None'
         .getOrElse(`there is nothing`)
-
-    // if (value === null) {
-    //   return `there is nothing`
-    // }
 
     return `value: ${optionalValue}, type: ${typeof optionalValue}`
   };
