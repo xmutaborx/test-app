@@ -12,14 +12,19 @@ class App extends React.PureComponent<{}, { value: string }> {
     };
   }
 
-  handleChangeStorage = (e: any) => {
-    sessionStorage.setItem(SESSION_KEY, e.target.value);
-    this.setState({value: e.target.value});
+  handleChangeStorage = (value: string) => {
+    sessionStorage.setItem(SESSION_KEY, value);
+    this.setState({value});
   };
 
   handleShowStorage = () => {
     const value: string | null = sessionStorage.getItem(SESSION_KEY);
-    return `value: ${value}, type: ${typeof value}`
+    if (value === null) {
+      return `value is null`
+    } else {
+      return `value: ${value}, type: ${typeof value}`
+    }
+
 
   };
 
@@ -32,7 +37,7 @@ class App extends React.PureComponent<{}, { value: string }> {
             <input
                 id={`customInput`}
                 type={`text`}
-                onChange={this.handleChangeStorage}
+                onChange={(e) => this.handleChangeStorage(e.target.value)}
                 value={this.state.value}
             />
 
