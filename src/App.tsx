@@ -1,26 +1,48 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Option } from 'fp-ts/lib/Option'
 
-const App = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const SESSION_KEY: string = `TEST_KEY`;
+
+class App extends React.PureComponent<{}, { value: string }> {
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      value: ''
+    };
+  }
+
+  handleChangeStorage = (e: any) => {
+    sessionStorage.setItem(SESSION_KEY, e.target.value);
+    this.setState({value: e.target.value});
+  };
+
+  handleShowStorage = () => {
+    const value: string | null = sessionStorage.getItem((SESSION_KEY));
+    return `value: ${value}, \n type: ${typeof value}`
+
+  };
+
+
+  render() {
+
+    return (
+        <div className="App">
+          <fieldset>
+            <label htmlFor={`customInput`}>Your message: </label>
+            <input
+                id={`customInput`}
+                type={`text`}
+                onChange={this.handleChangeStorage}
+                value={this.state.value}
+            />
+
+          </fieldset>
+
+          <p>{this.handleShowStorage()}</p>
+        </div>
+    );
+  }
 }
 
 export default App;
