@@ -18,14 +18,13 @@ class App extends React.PureComponent<{}, { value: string }> {
   };
 
   handleShowStorage = () => {
-    const value: string | null = sessionStorage.getItem((SESSION_KEY));
-    return `value: ${value}, \n type: ${typeof value}`
+    const value: string | null = sessionStorage.getItem(SESSION_KEY);
+    return `value: ${value}, type: ${typeof value}`
 
   };
 
 
   render() {
-
     return (
         <div className="App">
           <fieldset>
