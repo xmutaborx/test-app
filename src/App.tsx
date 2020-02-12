@@ -1,10 +1,14 @@
-import React from 'react';
+import * as React from 'react';
 import { fromNullable } from "fp-ts/lib/Option";
-import * as O from 'fp-ts/lib/Option'
+import {ChangeEvent} from "react";
 
 const SESSION_KEY: string = `TEST_KEY`;
 
-class App extends React.PureComponent<{}, { value: string }> {
+interface TAppState {
+  value: string
+}
+
+export class App extends React.PureComponent<{}, TAppState> {
   constructor(props: any) {
     super(props);
 
@@ -13,19 +17,20 @@ class App extends React.PureComponent<{}, { value: string }> {
     };
   }
 
-  handleChangeStorage = (value: string):void => {
-    sessionStorage.setItem(SESSION_KEY, value);
-    this.setState({value});
-  };
+  handleChangeStorage = (e: ChangeEvent<HTMLInputElement>):void => {
+    sessionStorage.setItem(SESSION_KEY, e.target.value);
+    this.setState({value: e.target.value});
 
-  handleShowStorage = ():string => {
-    const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY))
-        .getOrElse(`there is nothing`)
-
-    return `value: ${optionalValue}, type: ${typeof optionalValue}`
+    if (!e.target.value) {
+      sessionStorage.removeItem(SESSION_KEY);
+    }
   };
 
   render() {
+    const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY))
+        .getOrElse('there is nothing');
+    let valueFromStorage: string = `value: ${optionalValue}, type: ${typeof optionalValue}`;
+
     return (
         <div className="App">
           <fieldset>
@@ -33,14 +38,12 @@ class App extends React.PureComponent<{}, { value: string }> {
             <input
                 id={`customInput`}
                 type={`text`}
-                onChange={(e) => this.handleChangeStorage(e.target.value)}
+                onChange={this.handleChangeStorage}
                 value={this.state.value}
             />
           </fieldset>
-          <p>{this.handleShowStorage()}</p>
+          <p>{valueFromStorage}</p>
         </div>
     );
   }
 }
-
-export default App;
