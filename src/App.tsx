@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { fromNullable } from "fp-ts/lib/Option";
-import {ChangeEvent} from "react";
 
 const SESSION_KEY: string = `TEST_KEY`;
 
@@ -17,7 +16,7 @@ export class App extends React.PureComponent<{}, TAppState> {
     };
   }
 
-  handleChangeStorage = (e: ChangeEvent<HTMLInputElement>):void => {
+  handleChangeStorage = (e: React.ChangeEvent<HTMLInputElement>):void => {
     sessionStorage.setItem(SESSION_KEY, e.target.value);
     this.setState({value: e.target.value});
 
