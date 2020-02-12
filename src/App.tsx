@@ -2,6 +2,11 @@ import * as React from 'react';
 import { fromNullable, Option } from "fp-ts/lib/Option";
 
 const SESSION_KEY: string = `TEST_KEY`;
+const DATA = [`some`, `other`, `test`];
+const checkValueHOF = (arr: string[]) => (item: string): Option<string> => {
+    const result = arr.find(dataItem => dataItem === item) ? item : null;
+    return fromNullable(result)
+};
 
 interface TAppState {
   value: string
@@ -25,21 +30,15 @@ export class App extends React.PureComponent<{}, TAppState> {
     }
   };
 
-  checkValueInArray = (item: string): Option<string> => {
-      const DATA = [`some`, `other`, `test`];
-      const result = DATA.find(dataItem => dataItem === item) ? item : null;
-
-      return fromNullable(result)
-  };
-
   render() {
     const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY));
+    const checkValue = checkValueHOF(DATA);
 
-      const valueInArray = optionalValue
-          .chain(this.checkValueInArray)
+    const valueInArray = optionalValue
+          .chain(checkValue)
           .getOrElse('is not');
 
-      const sessionValue = optionalValue
+    const sessionValue = optionalValue
           .getOrElse(`There is nothing`);
 
     const valueFromStorage: string = `value: ${sessionValue}, type: ${typeof sessionValue}`;
@@ -57,7 +56,9 @@ export class App extends React.PureComponent<{}, TAppState> {
           </fieldset>
           <p>{valueFromStorage}</p>
           <hr/>
-          <p>value {valueInArray} in array ['some', 'other', 'test']</p>
+          <p>value {valueInArray} in array [{DATA.map((item: string, index: number) => (
+              <span key={item}>{(index ? ', ' : '') + item}</span>
+          ))}]</p>
         </div>
     );
   }
