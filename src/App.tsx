@@ -56,9 +56,7 @@ export class App extends React.PureComponent<{}, TAppState> {
           </fieldset>
           <p>{valueFromStorage}</p>
           <hr/>
-          <p>value {valueInArray} in array [{DATA.map((item: string, index: number) => (
-              <span key={item}>{(index ? ', ' : '') + item}</span>
-          ))}]</p>
+          <p>Value {valueInArray} in array [{DATA.join(', ')}]</p>
         </div>
     );
   }
