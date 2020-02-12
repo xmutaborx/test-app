@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fromNullable } from "fp-ts/lib/Option";
+import { fromNullable, Option } from "fp-ts/lib/Option";
 
 const SESSION_KEY: string = `TEST_KEY`;
 
@@ -25,10 +25,24 @@ export class App extends React.PureComponent<{}, TAppState> {
     }
   };
 
+  checkValueInArray = (item: string): Option<string> => {
+      const DATA = [`some`, `other`, `test`];
+      const result = DATA.find(dataItem => dataItem === item) ? item : null;
+
+      return fromNullable(result)
+  };
+
   render() {
-    const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY))
-        .getOrElse('there is nothing');
-    let valueFromStorage: string = `value: ${optionalValue}, type: ${typeof optionalValue}`;
+    const optionalValue = fromNullable(sessionStorage.getItem(SESSION_KEY));
+
+      const valueInArray = optionalValue
+          .chain(this.checkValueInArray)
+          .getOrElse('is not');
+
+      const sessionValue = optionalValue
+          .getOrElse(`There is nothing`);
+
+    const valueFromStorage: string = `value: ${sessionValue}, type: ${typeof sessionValue}`;
 
     return (
         <div className="App">
@@ -42,6 +56,8 @@ export class App extends React.PureComponent<{}, TAppState> {
             />
           </fieldset>
           <p>{valueFromStorage}</p>
+          <hr/>
+          <p>value {valueInArray} in array ['some', 'other', 'test']</p>
         </div>
     );
   }
