@@ -8,24 +8,22 @@ const second: Option<number> = some(20);
 const third: Option<number> = none;
 const fourth: Option<number> = some(40);
 
-const additionItems = (item: Array<number>): number => {
+const additionItems = (arr: Array<number>): number => {
     let result: number = 0;
-    item.map((item: number) => result += item);
+    arr.map((item: number) => result += item);
     return result
 };
 
 const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
-    let outputValue: Option<number> = some(0);
+    const sequenceOptions = sequenceT(option);
 
-    const sequenceAB = sequenceT(option)(a, b)
+    const sequenceAb = sequenceOptions(a,b)
         .map(additionItems);
 
-    const sequenceCD = sequenceT(option)(c, d)
-        .map(additionItems)
+    const sequenceCd = sequenceOptions(c,d)
+        .map(additionItems);
 
-    outputValue = sequenceCD.isSome() ? sequenceCD : sequenceAB;
-
-    return outputValue
+    return sequenceCd.isSome() ? sequenceCd : sequenceAb;
 };
 
 console.log(addNullableDeclarative(first, second, third, fourth));
