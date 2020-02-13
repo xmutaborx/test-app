@@ -1,5 +1,34 @@
 import * as React from 'react';
-import { fromNullable, Option } from "fp-ts/lib/Option";
+import { fromNullable, Option, option, none, some} from "fp-ts/lib/Option";
+import { sequenceT } from "fp-ts/lib/Apply";
+
+// ------------------------
+const first: Option<number> = some(10);
+const second: Option<number> = some(20);
+const third: Option<number> = some(30);
+const fourth: Option<number> = some(40);
+
+const additionItems = (item: Array<number>): number => {
+    let result: number = 0;
+    item.map((item: number) => result += item);
+    return result
+};
+
+const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
+    let outputValue: Option<number> = some(0);
+
+    const sequenceAB = sequenceT(option)(a, b)
+        .map(additionItems);
+
+    const sequenceCD = sequenceT(option)(c, d)
+        .map(additionItems);
+
+    return outputValue
+};
+
+console.log(addNullableDeclarative(first, second, third, fourth));
+// -------------------------
+
 
 const SESSION_KEY: string = `TEST_KEY`;
 const DATA = [`some`, `other`, `test`];
