@@ -15,15 +15,15 @@ const additionItems = (item: Array<number>): number => {
 };
 
 const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
-    // let outputValue: Option<number> = some(0);
+    let outputValue: Option<number> = some(0);
 
     const sequenceAB = sequenceT(option)(a, b)
         .map(additionItems);
 
     const sequenceCD = sequenceT(option)(c, d)
-        .map(additionItems);
+        .map(additionItems)
 
-    const outputValue = sequenceCD.isSome() ? sequenceCD : sequenceAB;
+    outputValue = sequenceCD.isSome() ? sequenceCD : sequenceAB;
 
     return outputValue
 };
