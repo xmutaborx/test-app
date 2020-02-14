@@ -6,33 +6,36 @@ import {sequenceT} from "fp-ts/lib/Apply";
 const first: Option<number> = some(10);
 const second: Option<number> = some(15);
 const third: Option<number> = some(64);
-const fourth: Option<number> = some(36);
+const fourth: Option<number> = some(3);
 
-const additionItems = (arr: Array<number>): Option<number> => {
+const additionItems = (arr: Array<number>): number => {
     let result: number = 0;
     arr.map((item: number) => result += item);
-    return fromNullable(result)
+    return result
 };
 
 const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
-    let counter: Option<number> = some(0);
+    let counter: Option<number> = some(4);
 
-    const sequenceOptions = sequenceT(option);
+    const sequence = sequenceT(option);
 
-    const AB = sequenceOptions(a, b)
-        .chain(additionItems);
-    const CD = sequenceOptions(c, d)
-        .chain(additionItems);
+    const AB = sequence(a, b)
+        .map(additionItems);
+    const CD = sequence(c, d)
+        .map(additionItems);
 
-    const CDnonD = sequenceOptions(c, d.alt(some(0)));
-    const CDnonC = sequenceOptions(c.alt(some(0)), d);
+    const CDnonD = sequence(c, d.alt(some(0)))
+        .chain(seq => counter.map(counterValue => seq[0] > counterValue ? seq[0] + counterValue : seq[0]));
 
-    const outputValue = counter
-        .chain(item => AB.map(sequenceValue => sequenceValue + item))
+    const CDnonC = sequence(c.alt(some(0)), d)
+        .chain(seq => counter.map(counterValue => seq[1] < counterValue ? seq[1] + counterValue : seq[1]));
 
+    console.log(AB);
+    console.log(CD);
+    console.log(CDnonD);
+    console.log(CDnonC);
 
-    // map оборачивает значение на выходе в Option, chain - нет ???
-    return outputValue
+    return CD
 
 };
 
