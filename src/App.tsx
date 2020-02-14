@@ -4,26 +4,32 @@ import { sequenceT } from "fp-ts/lib/Apply";
 
 // ------------------------
 const first: Option<number> = some(10);
-const second: Option<number> = some(20);
-const third: Option<number> = none;
+const second: Option<number> = some(15);
+const third: Option<number> = some(60);
 const fourth: Option<number> = some(40);
 
-const additionItems = (arr: Array<number>): number => {
+const additionItems = (arr: Array<number>): Option<number> => {
     let result: number = 0;
     arr.map((item: number) => result += item);
-    return result
+    return fromNullable(result)
 };
 
 const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
+    let outputValue = some(0);
+
     const sequenceOptions = sequenceT(option);
 
-    const sequenceAb = sequenceOptions(a,b)
-        .map(additionItems);
+    sequenceOptions(a, b)
+        .chain(item => outputValue = additionItems(item));
 
-    const sequenceCd = sequenceOptions(c,d)
-        .map(additionItems);
+    sequenceOptions(c, d)
+        .chain(item => outputValue = additionItems(item));
 
-    return sequenceCd.isSome() ? sequenceCd : sequenceAb;
+    sequenceOptions(c, d.alt(some(0)));
+
+    sequenceOptions(c.alt(some(0)), d);
+
+    return outputValue
 };
 
 console.log(addNullableDeclarative(first, second, third, fourth));
