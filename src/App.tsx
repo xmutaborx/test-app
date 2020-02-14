@@ -1,42 +1,40 @@
 import * as React from 'react';
-import {fromNullable, none, option, Option, some} from "fp-ts/lib/Option";
-import {sequenceT} from "fp-ts/lib/Apply";
+import { fromNullable, none, option, Option, some } from "fp-ts/lib/Option";
+import { sequenceT } from "fp-ts/lib/Apply";
 
 // ------------------------
-const first: Option<number> = some(10);
-const second: Option<number> = some(15);
-const third: Option<number> = some(64);
-const fourth: Option<number> = some(3);
+const first: Option<number> = some(3);
+const second: Option<number> = some(7);
+const third: Option<number> = some(12);
+const fourth: Option<number> = some(10);
+
+const sequence = sequenceT(option);
 
 const additionItems = (arr: Array<number>): number => {
-    let result: number = 0;
-    arr.map((item: number) => result += item);
-    return result
+    return arr.reduce((sum: number, item: number) => sum + item, 0);
 };
 
+const addValueIfGreatHOF = (optionA: Option<number>) => (b: number) =>
+    optionA
+        .map((a) => a > b ? additionItems([a, b]) : a);
+
+const addValueIfLessHOF = (optionA: Option<number>) => (b: number) =>
+    optionA
+        .map((a) => a < b ? additionItems([a, b]) : a);
+
+const sumOption = (a: Option<number>, b: Option<number>) => sequence(a, b).map(additionItems);
+
 const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
-    let counter: Option<number> = some(4);
+    const AB = sumOption(a, b);
+    const CD = sumOption(c, d);
 
-    const sequence = sequenceT(option);
-
-    const AB = sequence(a, b)
-        .map(additionItems);
-    const CD = sequence(c, d)
-        .map(additionItems);
-
-    const CDnonD = sequence(c, d.alt(some(0)))
-        .chain(seq => counter.map(counterValue => seq[0] > counterValue ? seq[0] + counterValue : seq[0]));
-
-    const CDnonC = sequence(c.alt(some(0)), d)
-        .chain(seq => counter.map(counterValue => seq[1] < counterValue ? seq[1] + counterValue : seq[1]));
-
-    console.log(AB);
-    console.log(CD);
-    console.log(CDnonD);
-    console.log(CDnonC);
+    const addC = addValueIfGreatHOF(c);
+    const addD = addValueIfLessHOF(d);
 
     return CD
-
+        .alt(AB.chain(addC))
+        .alt(AB.chain(addD))
+        .alt(AB)
 };
 
 console.log(addNullableDeclarative(first, second, third, fourth));
