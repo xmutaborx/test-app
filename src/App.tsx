@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { fromNullable, Option, option, none, some} from "fp-ts/lib/Option";
-import { sequenceT } from "fp-ts/lib/Apply";
+import {fromNullable, none, option, Option, some} from "fp-ts/lib/Option";
+import {sequenceT} from "fp-ts/lib/Apply";
 
 // ------------------------
 const first: Option<number> = some(10);
 const second: Option<number> = some(15);
-const third: Option<number> = some(60);
-const fourth: Option<number> = some(40);
+const third: Option<number> = some(64);
+const fourth: Option<number> = some(36);
 
 const additionItems = (arr: Array<number>): Option<number> => {
     let result: number = 0;
@@ -15,21 +15,25 @@ const additionItems = (arr: Array<number>): Option<number> => {
 };
 
 const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<number>, d: Option<number>): Option<number> => {
-    let outputValue = some(0);
+    let counter: Option<number> = some(0);
 
     const sequenceOptions = sequenceT(option);
 
-    sequenceOptions(a, b)
-        .chain(item => outputValue = additionItems(item));
+    const AB = sequenceOptions(a, b)
+        .chain(additionItems);
+    const CD = sequenceOptions(c, d)
+        .chain(additionItems);
 
-    sequenceOptions(c, d)
-        .chain(item => outputValue = additionItems(item));
+    const CDnonD = sequenceOptions(c, d.alt(some(0)));
+    const CDnonC = sequenceOptions(c.alt(some(0)), d);
 
-    sequenceOptions(c, d.alt(some(0)));
+    const outputValue = counter
+        .chain(item => AB.map(sequenceValue => sequenceValue + item))
 
-    sequenceOptions(c.alt(some(0)), d);
 
+    // map оборачивает значение на выходе в Option, chain - нет ???
     return outputValue
+
 };
 
 console.log(addNullableDeclarative(first, second, third, fourth));
