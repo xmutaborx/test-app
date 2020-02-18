@@ -1,13 +1,36 @@
 import * as React from 'react';
 import {Observable, of, from, interval, timer, range, Subject, BehaviorSubject, ReplaySubject} from 'rxjs';
-import { scan, map, filter, take, tap, reduce } from "rxjs/operators";
+import {scan, map, filter, take, tap, reduce, switchMap} from "rxjs/operators";
+import { fromFetch } from 'rxjs/fetch';
 
 export type TRxProps = {
     title: string,
     description?: string,
 }
 
-export class Rx extends React.PureComponent<TRxProps, {}> {
+export type TRxState = {
+    responseApi: [{
+        userId: number,
+        id: number,
+        title: string,
+        body: string
+    }]
+}
+
+export class Rx extends React.PureComponent<TRxProps, TRxState> {
+    constructor(props: TRxProps) {
+        super(props)
+
+        this.state = {
+            responseApi: [{
+                userId: 0,
+                id: 0,
+                title: '',
+                body: ''
+            }]
+        }
+    }
+
     //// Subject. Важно подписаться до того как объявятся события next
     handleStartSubject = () => {
         const stream$ = new Subject();
@@ -34,9 +57,8 @@ export class Rx extends React.PureComponent<TRxProps, {}> {
         stream$.subscribe(v => console.log(v, 'Replay subject'));
     };
 
-    //// SwitchMap - перенаправление стрима... nihuya ne ponyal poka chto
+    //// SwitchMap - перенаправление стрима... нихуя пока не понял как применить, надо разобраться!!!!!!!!!!
     handleSwitchMap = () => {
-
         const switchMapStream$ = interval(1000)
             .pipe(
                 map(v => v + 1)
@@ -45,13 +67,35 @@ export class Rx extends React.PureComponent<TRxProps, {}> {
                 next: (v) => console.log('Switch Map: ', v),
                 complete: () => console.log('SwitchMap Completed')
             })
+    };
 
+    handleRequest = () => {
+        const API = 'https://jsonplaceholder.typicode.com/posts';
+        const data$ = fromFetch(API)
+            .pipe(
+                switchMap(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        return of({error: true, message: `Error ${response.status}`});
+                    }
+                })
+            );
+
+        data$.subscribe({
+            next: (result) => this.handlePushResponse(result),
+            complete: () => console.log('Completed')
+        })
+    };
+
+    handlePushResponse = (response: any) => {
+        this.setState({responseApi: response})
     };
 
 
     render() {
         const { title, description } = this.props;
-
+        const { responseApi } = this.state;
         //// of - create stream
         const of$ = of (1, 2, 3);
         // of$.subscribe(val => console.log(val, 'Value'));
@@ -141,8 +185,6 @@ export class Rx extends React.PureComponent<TRxProps, {}> {
             () => console.log('Interval Stream 2 Completed')
         );
 
-
-
         return (
             <>
                 <h3>test component for RX</h3>
@@ -153,6 +195,12 @@ export class Rx extends React.PureComponent<TRxProps, {}> {
                     <button type={'button'} onClick={this.handleStartBehaviorSubject}>Start Behavior Subject Stream</button>
                     <button type={'button'} onClick={this.handleStartReplaySubject}>Start Replay Subject</button>
                     <button type={'button'} onClick={this.handleSwitchMap}>SwitchMap Stream</button>
+                    <button type={'button'} onClick={this.handleRequest}>API Request</button>
+                </div>
+                <div>
+                    {responseApi.length && responseApi.map((item, i) => (
+                        <div key={i + 'a'}>{item.title}</div>
+                    ))}
                 </div>
             </>
         )
