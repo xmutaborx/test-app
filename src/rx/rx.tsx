@@ -1,24 +1,53 @@
 import * as React from 'react';
-import {Observable, of, from, interval, timer, range} from 'rxjs';
-import { scan } from "rxjs/operators";
+import {Observable, of, from, interval, timer, range, Subject, BehaviorSubject, ReplaySubject} from 'rxjs';
+import { scan, map, filter, take, tap, reduce } from "rxjs/operators";
 
 export type TRxProps = {
     title: string,
     description?: string,
 }
 
-export type TRxState = {
-    counter: number
-}
+export class Rx extends React.PureComponent<TRxProps, {}> {
+    //// Subject. Важно подписаться до того как объявятся события next
+    handleStartSubject = () => {
+        const stream$ = new Subject();
+        stream$.subscribe(v => console.log(v, 'Subject'))
+        stream$.next('hello');
+        stream$.next('hello next');
+    };
 
-export class Rx extends React.PureComponent<TRxProps, TRxState> {
-    constructor(props: TRxProps) {
-        super(props);
+    //// Behavior Subject (Как Subject, но с дефолтным значением которое выведется первым)
+    handleStartBehaviorSubject = () => {
+        const stream$ = new BehaviorSubject('First Behavior Subject Value');
+        stream$.subscribe(v => console.log(v, 'Behavior subject'));
+        stream$.next('hello 2');
+        stream$.next('hello next 2');
+    };
 
-        this.state = {
-            counter: 0
-        }
-    }
+    //// Replay Subject. Позволяет сохранить предыдущие значения, можно подписаться после объявления всех next
+    // аргументом передается колличество последних сохраненных событий (буфер)
+    handleStartReplaySubject = () => {
+        const stream$ = new ReplaySubject(1);
+        stream$.next('hello 2');
+        stream$.next('hello next 2');
+
+        stream$.subscribe(v => console.log(v, 'Replay subject'));
+    };
+
+    //// SwitchMap - перенаправление стрима... nihuya ne ponyal poka chto
+    handleSwitchMap = () => {
+
+        const switchMapStream$ = interval(1000)
+            .pipe(
+                map(v => v + 1)
+            )
+            .subscribe({
+                next: (v) => console.log('Switch Map: ', v),
+                complete: () => console.log('SwitchMap Completed')
+            })
+
+    };
+
 
     render() {
         const { title, description } = this.props;
@@ -31,17 +60,10 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         const arr$ = from([1, 2, 3]);
         // arr$.subscribe(val => console.log(val, 'from value'));
 
-        //// operator pipe and scan. pipe - передает промежуточный результат какому либо методу
-        //// scan - метод для преобразования данных
-        const arr2$ = from([1, 2, 3]).pipe(
-            scan((acc: number[], v: number) => acc.concat(v), [])
-        );
-        // arr2$.subscribe(val => console.log(val));
-
         //// Interval, arg = ms
         const interval$ = interval(1000);
-        const subInterval = interval$.subscribe(v => console.log(v + 1, 'interval'));
-        setTimeout(() => subInterval.unsubscribe(), 5000);
+        // const subInterval = interval$.subscribe(v => console.log(v + 1, 'interval'));
+        // setTimeout(() => subInterval.unsubscribe(), 5000);
 
         //// Timer, arg = ms. (like setTimeout stream)
         // const timer$ = timer(2500).subscribe(v => console.log(v));
@@ -49,9 +71,7 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         //// Range
         // const range$ = range(42, 10).subscribe(v => console.log(v));
 
-
-        //_________________________________________
-        //// create stream with Observable
+        //// Observable
         const stream$ = new Observable(observer => {
             observer.next('First value');
 
@@ -61,13 +81,13 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
             setTimeout(() => observer.complete(), 4000);
         });
 
-        // Subscribe to observable
-        stream$.subscribe(
-            val => console.log('stream value: ', val),
-            err => console.log('Error: ', err),
-            () => console.log('Completed')
-        );
-        // with unsubscribe
+        //// Subscribe to observable
+        // stream$.subscribe(
+        //     val => console.log('stream value: ', val),
+        //     err => console.log('Error: ', err),
+        //     () => console.log('Completed')
+        // );
+        //// with unsubscribe
         // const sub = stream$.subscribe(...)
         // sub.unsubscribe()
 
@@ -78,6 +98,49 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         //     complete: () => console.log('Completed')
         // };
         // stream$.subscribe(observer);
+        //
+        //_________________________________________
+        //
+        //// Operators. Pipe -  позволяет поочередно предавать операторы которые работают с возвращаемыми значениями стрима
+        //
+        // tap - будет выполняться на каждой итерации не модифицируя данные
+        // map - модифицирует значение применяя колбэк
+        // filter - проверяет удовлетворяет ли значение условию
+        // take - устанавливает колличество выводимых значений next, в нашем случае это те, которые удовлетворили filter и завершает стрим
+        const intervalStream$ = interval(1000)
+            .pipe(
+                tap(v => console.log('Промежуточный результат: ', v)),
+                map(v => v * 3),
+                filter(v => v % 2 === 0),
+                take(5)
+            );
+        // takeLast(a: number) - выведет последние a-колличество элементов. Для правильной работы необходимо ограничить
+        // чтрим через take(b: number) где b >= a. Завершает стрим complete
+        // TakeWhile(v => v < 10) - стрим будет работать пока условие true
+        // Подписка на стрим:
+        // intervalStream$.subscribe({
+        //     next: v => console.log('Next: ', v),
+        //     complete: () => console.log('Completed')
+        // });
+        //
+        //_________________________________________
+        //
+        // scan - типа редюса. в нашем случае выводит сумму элементов которые попадают в next
+        // reduce - тоже что и scan, но выполняется перед завершением стрима
+        const intervalStream2$ = interval(1000)
+            .pipe(
+                tap(v => console.log('Tap: ', v)),
+                scan((acc, v) => acc + v, 0 ),
+                take(5),
+                // reduce((acc, v) => acc + v, 0)
+            );
+
+        intervalStream2$.subscribe(
+            (v) => console.log(v),
+            null,
+            () => console.log('Interval Stream 2 Completed')
+        );
+
 
 
         return (
@@ -85,8 +148,12 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
                 <h3>test component for RX</h3>
                 <p>title props: {title}</p>
                 <p>description props: {description}</p>
-
-                <button type={'button'}>Stream Button</button>
+                <div className="btn-wrap">
+                    <button type={'button'} onClick={this.handleStartSubject}>Start Subject Stream</button>
+                    <button type={'button'} onClick={this.handleStartBehaviorSubject}>Start Behavior Subject Stream</button>
+                    <button type={'button'} onClick={this.handleStartReplaySubject}>Start Replay Subject</button>
+                    <button type={'button'} onClick={this.handleSwitchMap}>SwitchMap Stream</button>
+                </div>
             </>
         )
     }

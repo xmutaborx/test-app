@@ -21,3 +21,13 @@ code {
 .fp_container h3 {
   text-align: center;
 }
+
+.btn-wrap {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-wrap button {
+  height: 30px;
+}
