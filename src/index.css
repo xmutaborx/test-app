@@ -12,3 +12,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.fp_container {
+  border: 1px solid black;
+  padding: 20px;
+}
+
+.fp_container h3 {
+  text-align: center;
+}
