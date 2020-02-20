@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Observable, of, from, interval, timer, range, Subject, BehaviorSubject, ReplaySubject} from 'rxjs';
 import {scan, map, filter, take, tap, reduce, switchMap} from "rxjs/operators";
 import { fromFetch } from 'rxjs/fetch';
+import { ajax, AjaxError, AjaxRequest } from 'rxjs/ajax';
 
 export type TRxProps = {
     title: string,
@@ -9,24 +10,66 @@ export type TRxProps = {
 }
 
 export type TRxState = {
+    input: '',
     responseApi: [{
         userId: number,
         id: number,
         title: string,
         body: string
+    }],
+    responseAjax: [{
+        login: string,
+        id: number,
+        node_id: string,
+        avatar_url: string,
+        gravatar_id: string,
+        url: string,
+        html_url: string,
+        followers_url: string,
+        following_irl: string,
+        gists_url: string,
+        starred_url: string,
+        subscriptions_url: string,
+        organizations_url: string,
+        repos_url: string,
+        events_url: string,
+        received_events_url: string,
+        type: string,
+        site_admin: boolean
     }]
 }
 
 export class Rx extends React.PureComponent<TRxProps, TRxState> {
     constructor(props: TRxProps) {
-        super(props)
+        super(props);
 
         this.state = {
+            input: '',
             responseApi: [{
                 userId: 0,
                 id: 0,
                 title: '',
                 body: ''
+            }],
+            responseAjax: [{
+                login: '',
+                id: 0,
+                node_id: '',
+                avatar_url: '',
+                gravatar_id: '',
+                url: '',
+                html_url: '',
+                followers_url: '',
+                following_irl: '',
+                gists_url: '',
+                starred_url: '',
+                subscriptions_url: '',
+                organizations_url: '',
+                repos_url: '',
+                events_url: '',
+                received_events_url: '',
+                type: '',
+                site_admin: false
             }]
         }
     }
@@ -57,7 +100,7 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         stream$.subscribe(v => console.log(v, 'Replay subject'));
     };
 
-    //// SwitchMap - перенаправление стрима... нихуя пока не понял как применить, надо разобраться!!!!!!!!!!
+    //// SwitchMap - перенаправление стрима... nihuya пока не понял как применить, надо разобраться!!!!!!!!!!
     handleSwitchMap = () => {
         const switchMapStream$ = interval(1000)
             .pipe(
@@ -69,7 +112,9 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
             })
     };
 
+    //// fromFetch
     handleRequest = () => {
+        console.log('request...');
         const API = 'https://jsonplaceholder.typicode.com/posts';
         const data$ = fromFetch(API)
             .pipe(
@@ -84,6 +129,7 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
 
         data$.subscribe({
             next: (result) => this.handlePushResponse(result),
+            error: (err) => console.log('Error: ', err),
             complete: () => console.log('Completed')
         })
     };
@@ -92,12 +138,60 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         this.setState({responseApi: response})
     };
 
+    //// AJAX Request 1
+    handleAjaxRequest = () => {
+        console.log('Ajax request...');
+        const API = `https://api.github.com/users?per_page=5`;
+        const request$ = ajax.getJSON(API);
+        request$.subscribe({
+            next: (v) => this.handlePushAjaxToState(v),
+        })
+    };
+
+    handlePushAjaxToState = (response: any) => {
+        this.setState({
+            responseAjax: response
+        })
+    }
+
+    //// AJAX Request 2
+    handleAjaxRequest2 = () => {
+        console.log('Ajax request...');
+        const API = `https://api.github.com/users?per_page=5`;
+
+        const users$ = ajax({
+            url: API,
+            method: 'GET',
+            headers: {},
+            body: {}
+        })
+            .pipe(
+                map(response => response.response)
+            )
+
+        users$.subscribe(
+            v => console.log(v),
+            err => console.log(err)
+        )
+    };
+
+    //////////
+    handleChangeInput = (e: any) => {
+        this.setState({input: e.target.value})
+    };
 
     render() {
         const { title, description } = this.props;
-        const { responseApi } = this.state;
+        const { responseApi, responseAjax } = this.state;
+
+        let result = '';
+        const weirdStream$ = of(this.state.input);
+        const subWeirdStream = weirdStream$.subscribe(
+            v => result = v
+        )
+
         //// of - create stream
-        const of$ = of (1, 2, 3);
+        const of$ = of ('Stream from of', 1, 2);
         // of$.subscribe(val => console.log(val, 'Value'));
 
         //// from - create stream (work with array)
@@ -114,6 +208,15 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
 
         //// Range
         // const range$ = range(42, 10).subscribe(v => console.log(v));
+
+        /// From Promise
+        // const promiseSource$ = from(new Promise((resolve) => {
+        //     setTimeout(() => {
+        //         resolve('From Promise')
+        //     }, 2000)
+        // }));
+        // const subPromise = promiseSource$.subscribe(v => console.log(v));
+
 
         //// Observable
         const stream$ = new Observable(observer => {
@@ -171,35 +274,61 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         //
         // scan - типа редюса. в нашем случае выводит сумму элементов которые попадают в next
         // reduce - тоже что и scan, но выполняется перед завершением стрима
-        const intervalStream2$ = interval(1000)
-            .pipe(
-                tap(v => console.log('Tap: ', v)),
-                scan((acc, v) => acc + v, 0 ),
-                take(5),
-                // reduce((acc, v) => acc + v, 0)
-            );
-
-        intervalStream2$.subscribe(
-            (v) => console.log(v),
-            null,
-            () => console.log('Interval Stream 2 Completed')
-        );
+        // const intervalStream2$ = interval(1000)
+        //     .pipe(
+        //         tap(v => console.log('Tap: ', v)),
+        //         scan((acc, v) => acc + v, 0 ),
+        //         take(5),
+        //         // reduce((acc, v) => acc + v, 0)
+        //     );
+        //
+        // intervalStream2$.subscribe(
+        //     (v) => console.log(v),
+        //     null,
+        //     () => console.log('Interval Stream 2 Completed')
+        // );
 
         return (
             <>
                 <h3>test component for RX</h3>
                 <p>title props: {title}</p>
                 <p>description props: {description}</p>
+                <input
+                    type={"text"}
+                    value={this.state.input}
+                    onChange={this.handleChangeInput}
+                />
+                <p>Value from state: {this.state.input}</p>
+                <p>Value from stream: {result}</p>
                 <div className="btn-wrap">
                     <button type={'button'} onClick={this.handleStartSubject}>Start Subject Stream</button>
                     <button type={'button'} onClick={this.handleStartBehaviorSubject}>Start Behavior Subject Stream</button>
                     <button type={'button'} onClick={this.handleStartReplaySubject}>Start Replay Subject</button>
                     <button type={'button'} onClick={this.handleSwitchMap}>SwitchMap Stream</button>
-                    <button type={'button'} onClick={this.handleRequest}>API Request</button>
+                    <button type={'button'} onClick={this.handleRequest}>fromFetch Request</button>
+                    <button type={'button'} onClick={this.handleAjaxRequest}>AJAX Request</button>
+                    <button type={'button'} onClick={this.handleAjaxRequest2}>AJAX Request 2</button>
                 </div>
                 <div>
                     {responseApi.length && responseApi.map((item, i) => (
-                        <div key={i + 'a'}>{item.title}</div>
+                        <div
+                            className="item_api"
+                            key={item.id}
+                        >
+                            {item.title}
+                        </div>
+                    ))}
+                </div>
+                <div className="container_ajax">
+                    {responseAjax[0].id !== 0 && responseAjax.map((item, i) => (
+                        <div
+                            className="item_api"
+                            key={item.id}
+                        >
+                            <img className="avatar" src={item.avatar_url}/>
+                            <p>{item.login}</p>
+                            <p>Organization: {item.organizations_url}</p>
+                        </div>
                     ))}
                 </div>
             </>

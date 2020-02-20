@@ -31,3 +31,16 @@ code {
 .btn-wrap button {
   height: 30px;
 }
+
+.item_api {
+  border-bottom: 1px solid #ddd;
+}
+
+.avatar {
+  width: 200px;
+}
+
+.container_ajax {
+  display: flex;
+  justify-content: space-between;
+}
