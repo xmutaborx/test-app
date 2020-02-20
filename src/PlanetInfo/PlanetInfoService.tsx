@@ -1,4 +1,4 @@
-import {Observable} from "rxjs";
+import {interval, Observable} from "rxjs";
 import {ajax} from "rxjs/ajax";
 
 export type Response = {
