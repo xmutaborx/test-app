@@ -1,8 +1,7 @@
 import * as React from 'react';
-import {request$} from "./SearchService";
 import {ajax} from "rxjs/ajax"
 import {EMPTY, Subject, Subscription} from "rxjs";
-import {debounceTime, distinctUntilChanged, map, switchMap, mergeMap, catchError, tap, filter} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, map, switchMap, catchError, tap, filter} from "rxjs/operators";
 
 export type TSearchState = {
     inputValue: string,
@@ -62,13 +61,14 @@ export class Search extends React.PureComponent<{}, TSearchState> {
 
     componentDidMount(): void {
         const URL = `https://api.github.com/search/users?q=`;
+
         this.sub = this.stream$
             .pipe(
                 debounceTime(1000),
                 distinctUntilChanged(),
                 tap(v => {
                    if (v === '') {
-                       this.setState({canIShow: false})
+                       this.setState({canIShow: false});
                    }
                 }),
                 filter(v => v !== ''),
@@ -81,7 +81,7 @@ export class Search extends React.PureComponent<{}, TSearchState> {
                     this.setState({canIShow: true, users: data})
                 })
             )
-            .subscribe(v => console.log(v))
+            .subscribe()
     }
 
     componentWillUnmount(): void {
@@ -99,6 +99,7 @@ export class Search extends React.PureComponent<{}, TSearchState> {
         return (
             <>
                 <div className={"search__header"}>
+                    <span>Search users on GitHub: </span>
                     <input
                         id={"inputId"}
                         value={inputValue}
@@ -109,7 +110,9 @@ export class Search extends React.PureComponent<{}, TSearchState> {
                     {users[0].id !== 0 && canIShow && users.map(item =>
                         <div key={item.id}>
                             <p>{item.login}</p>
-                            <img src={item.avatar_url} width={250}/>
+                            <a href={item.html_url} target={"_blank"} rel="noopener noreferrer">
+                                <img src={item.avatar_url} width={250}/>
+                            </a>
                         </div>
                     )}
                 </div>
