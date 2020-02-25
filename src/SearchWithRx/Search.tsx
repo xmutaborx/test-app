@@ -1,11 +1,14 @@
 import * as React from 'react';
+import './Search.css';
+
 import {ajax} from "rxjs/ajax"
 import {EMPTY, Subject, Subscription} from "rxjs";
-import {debounceTime, distinctUntilChanged, map, switchMap, catchError, tap, filter} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, map, switchMap, catchError, tap, filter, first} from "rxjs/operators";
 
 export type TSearchState = {
     inputValue: string,
     canIShow: boolean,
+    isLoading: boolean,
     users: [{
         login: string,
         id: number,
@@ -33,6 +36,7 @@ export class Search extends React.PureComponent<{}, TSearchState> {
     readonly state: TSearchState = {
         inputValue: '',
         canIShow: false,
+        isLoading: false,
         users: [{
             login: '',
             id: 0,
@@ -64,21 +68,22 @@ export class Search extends React.PureComponent<{}, TSearchState> {
 
         this.sub = this.stream$
             .pipe(
-                debounceTime(1000),
+                debounceTime(500),
                 distinctUntilChanged(),
                 tap(v => {
                    if (v === '') {
-                       this.setState({canIShow: false});
+                       this.setState({canIShow: false, isLoading: false});
                    }
                 }),
                 filter(v => v !== ''),
+                tap(() => this.setState({isLoading: true})),
                 switchMap(v => ajax.getJSON(`${URL}${v}`)
                     .pipe(
                         catchError(() => EMPTY)
                     )),
                 map((response: any) => response.items),
                 tap(data => {
-                    this.setState({canIShow: true, users: data})
+                    this.setState({canIShow: true, users: data, isLoading: false})
                 })
             )
             .subscribe()
@@ -94,7 +99,7 @@ export class Search extends React.PureComponent<{}, TSearchState> {
     };
 
     render() {
-        const {inputValue, users, canIShow} = this.state;
+        const {inputValue, users, canIShow, isLoading} = this.state;
 
         return (
             <>
@@ -107,6 +112,9 @@ export class Search extends React.PureComponent<{}, TSearchState> {
                     />
                 </div>
                 <div className={"search__container"}>
+                    {isLoading && (
+                        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+                    )}
                     {users[0].id !== 0 && canIShow && users.map(item =>
                         <div key={item.id}>
                             <p>{item.login}</p>

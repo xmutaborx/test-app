@@ -175,6 +175,10 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         )
     };
 
+
+
+
+    //
     //////////
     handleChangeInput = (e: any) => {
         this.setState({input: e.target.value})
@@ -216,7 +220,6 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         //     }, 2000)
         // }));
         // const subPromise = promiseSource$.subscribe(v => console.log(v));
-
 
         //// Observable
         const stream$ = new Observable(observer => {
@@ -269,6 +272,17 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         //     next: v => console.log('Next: ', v),
         //     complete: () => console.log('Completed')
         // });
+        //
+        // УТЕЧКИ ПАМЯТИ
+        //
+        // take(num) - если перед take(1) стоит filter, который не пропустил значение, то в take ничего не приходит
+        // = утечка памяти
+        //
+        //
+        //
+        // fisrt() - оператор закрывающий поток после первого получечнного результата. Но если через него пролетит
+        // undefined, то он выкинет ошибку + утчека памяти
+        //
         //
         //_________________________________________
         //
