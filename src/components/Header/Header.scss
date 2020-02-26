@@ -1,0 +1,10 @@
+.header {
+  &__navigation {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    a + a {
+      margin-left: 20px;
+    }
+  }
+}

@@ -278,6 +278,7 @@ export class Rx extends React.PureComponent<TRxProps, TRxState> {
         // take(num) - если перед take(1) стоит filter, который не пропустил значение, то в take ничего не приходит
         // = утечка памяти
         //
+        // takeUntil() -
         //
         //
         // fisrt() - оператор закрывающий поток после первого получечнного результата. Но если через него пролетит

@@ -4,6 +4,7 @@ import './Search.css';
 import {ajax} from "rxjs/ajax"
 import {EMPTY, Subject, Subscription} from "rxjs";
 import {debounceTime, distinctUntilChanged, map, switchMap, catchError, tap, filter, first} from "rxjs/operators";
+import {Header} from "../components/Header/Header";
 
 export type TSearchState = {
     inputValue: string,
@@ -103,7 +104,8 @@ export class Search extends React.PureComponent<{}, TSearchState> {
 
         return (
             <>
-                <div className={"search__header"}>
+                <Header/>
+                <div className={"search__header content"}>
                     <span>Search users on GitHub: </span>
                     <input
                         id={"inputId"}
@@ -111,16 +113,26 @@ export class Search extends React.PureComponent<{}, TSearchState> {
                         onChange={this.handleChangeInput}
                     />
                 </div>
-                <div className={"search__container"}>
+                <div className={"search__container content row"}>
                     {isLoading && (
-                        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+                        <div className="progress">
+                            <div className="indeterminate"></div>
+                        </div>
                     )}
                     {users[0].id !== 0 && canIShow && users.map(item =>
-                        <div key={item.id}>
-                            <p>{item.login}</p>
-                            <a href={item.html_url} target={"_blank"} rel="noopener noreferrer">
-                                <img src={item.avatar_url} width={250}/>
-                            </a>
+                        <div className={"col s4 m4"} key={item.login}>
+                            <div key={item.id} className={'card'}>
+                                <div className={"card-image"}>
+                                    <img src={item.avatar_url} width={250}/>
+                                    <span className={"card-title"}>{item.login}</span>
+                                </div>
+                                <div className={'card-action'}>
+                                    <a href={item.html_url}
+                                       target={"_blank"}
+                                       rel="noopener noreferrer"
+                                       >Github -></a>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
