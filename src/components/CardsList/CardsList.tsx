@@ -75,7 +75,7 @@ const renderCharCard = (data) => {
                     </table>
                 </div>
                 <div className="card-action">
-                    <Link to={`/planets/${id}`}>More info...</Link>
+                    <Link to={`/characters/${id}`}>More info...</Link>
                 </div>
             </div>
         </div>

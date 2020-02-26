@@ -5,10 +5,10 @@ import { MainPage } from "./components/MainPage/MainPage";
 import { Characters } from "./components/Characters/Characters";
 import { Planets } from "./components/Planets/Planets";
 
-import { FpTest } from "./fptsTest/fp-ts";
-import { Rx } from './rx/rx';
-import {PlanetInfoContainer} from "./PlanetInfo/PlanetInfoContainer";
-import {Search} from "./SearchWithRx/Search";
+import { FpTest } from "./TEST_COMPONENTS/fptsTest/fp-ts";
+import { Rx } from './TEST_COMPONENTS/rx/rx';
+import {PlanetInfoContainer} from "./TEST_COMPONENTS/PlanetInfo/PlanetInfoContainer";
+import {Search} from "./TEST_COMPONENTS/SearchWithRx/Search";
 
 
 

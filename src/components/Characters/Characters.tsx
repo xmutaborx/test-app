@@ -5,7 +5,9 @@ export const Characters = () => {
     return (
         <>
             <Header/>
-            <h1>CHARACTERS PAGE</h1>
+            <div className={'content'}>
+                <h4>CHARACTERS PAGE</h4>
+            </div>
         </>
     )
 };

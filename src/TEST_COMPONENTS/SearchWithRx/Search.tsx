@@ -4,7 +4,7 @@ import './Search.css';
 import {ajax} from "rxjs/ajax"
 import {EMPTY, Subject, Subscription} from "rxjs";
 import {debounceTime, distinctUntilChanged, map, switchMap, catchError, tap, filter, first} from "rxjs/operators";
-import {Header} from "../components/Header/Header";
+import {Header} from "../../components/Header/Header";
 
 export type TSearchState = {
     inputValue: string,
