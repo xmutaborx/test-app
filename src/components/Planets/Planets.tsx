@@ -3,11 +3,12 @@ import { Header } from "../Header/Header";
 import { requestStream$ } from "../../services/api";
 import { API_URL } from "../../constants/constants";
 import {tap} from "rxjs/operators";
+import {Subscription} from "rxjs";
 
 export type TPlanetsProps = {
     match: {
         params: {
-            id: string
+            id: boolean
         }
     }
 }
@@ -27,15 +28,19 @@ export class Planets extends React.PureComponent<TPlanetsProps, TPlanetsState> {
         isLoading: true
     };
 
+    sub?: Subscription;
     planetId = this.props.match.params.id;
 
     componentDidMount(): void {
-        requestStream$(`${API_URL.planets}${this.planetId}`)
+        this.sub = requestStream$(`${API_URL.planets}${this.planetId}`)
             .pipe(
                 tap(data => this.setState({data, isLoading: false})),
-                tap(data => console.log(data))
             )
             .subscribe()
+    }
+
+    componentWillUnmount(): void {
+        this.sub?.unsubscribe()
     }
 
     render() {
