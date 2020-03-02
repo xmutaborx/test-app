@@ -1,9 +1,14 @@
 import * as React from 'react';
 import { Header } from "../Header/Header";
 import { fold } from '@devexperts/remote-data-ts'
+import {SwapiResponse} from "../../services/api";
+
+// export type TPlanetsProps = {
+//     data: any
+// }
 
 export type TPlanetsProps = {
-    data: any
+    data: SwapiResponse
 }
 
 export class Planets extends React.PureComponent<TPlanetsProps, {}> {
