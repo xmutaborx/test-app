@@ -1,50 +1,13 @@
 import * as React from 'react';
 import { Header } from "../Header/Header";
-import { requestStream$ } from "../../services/api";
-import { API_URL } from "../../constants/constants";
-import {tap} from "rxjs/operators";
-import {Subscription} from "rxjs";
 
 export type TPlanetsProps = {
-    match: {
-        params: {
-            id: boolean
-        }
-    }
+    data: any
 }
 
-export type TPlanetsState = {
-    data: {
-        [key: string]: string
-    },
-    isLoading: boolean
-}
-
-export class Planets extends React.PureComponent<TPlanetsProps, TPlanetsState> {
-    readonly state: TPlanetsState = {
-        data: {
-            name: ''
-        },
-        isLoading: true
-    };
-
-    sub?: Subscription;
-    planetId = this.props.match.params.id;
-
-    componentDidMount(): void {
-        this.sub = requestStream$(`${API_URL.planets}${this.planetId}`)
-            .pipe(
-                tap(data => this.setState({data, isLoading: false})),
-            )
-            .subscribe()
-    }
-
-    componentWillUnmount(): void {
-        this.sub?.unsubscribe()
-    }
-
+export class Planets extends React.PureComponent<TPlanetsProps, {}> {
     render() {
-        const {isLoading, data} = this.state;
+        const {data} = this.props;
 
         return (
             <>
@@ -54,7 +17,7 @@ export class Planets extends React.PureComponent<TPlanetsProps, TPlanetsState> {
                     <div className={'row'}>
                         <div className="col s12">
                             <div className={'row'}>
-                                {isLoading && (
+                                {!data && (
                                     <div className="progress">
                                         <div className="indeterminate"/>
                                     </div>

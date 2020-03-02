@@ -1,6 +1,9 @@
 import {ajax} from "rxjs/ajax";
 import {Observable} from "rxjs";
-import {Response} from "../TEST_COMPONENTS/PlanetInfo/PlanetInfoService";
+import {RemoteData} from "@devexperts/remote-data-ts";
+import {map} from "rxjs/operators";
 
-export const requestStream$ = (url: string): Observable<Response> =>
-    ajax.getJSON(url);
+export type SwapiRequest = string[];
+
+export const requestStream$ = (request: string): Observable<RemoteData<Error, SwapiRequest>> =>
+    ajax.getJSON(request)

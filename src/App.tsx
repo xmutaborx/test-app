@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import { MainPage } from "./components/MainPage/MainPage";
 import { Characters } from "./components/Characters/Characters";
 import { Planets } from "./components/Planets/Planets";
+import { planetComponent } from "./containers/Planets/Planets.container";
 
 import { FpTest } from "./TEST_COMPONENTS/fptsTest/fp-ts";
 import { Rx } from './TEST_COMPONENTS/rx/rx';
@@ -18,7 +19,7 @@ export class App extends React.PureComponent<{}, {}> {
         <Switch>
             <Route exact path={"/"} component={MainPage} />
             <Route exact path={"/characters/:id"} component={Characters} />
-            <Route exact path={"/planets/:id"} component={Planets} />
+            <Route exact path={"/planets/:id"} component={planetComponent} />
 
             <Route exact path={"/fp-test"} component={FpTest} />
             <Route exact path={"/rx"} component={Rx} />
