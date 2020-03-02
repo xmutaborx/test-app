@@ -33,13 +33,13 @@ export class MainPage extends React.PureComponent<{}, TMainPageState> {
         const URL = this.state.searchType === SEARCH_TYPES.planets ? API_URL.planets : API_URL.char;
 
         const sr$ = new Subject();
-        // sr$.pipe(
-        //     tap(() => this.setState({isLoading: true})),
-        //     switchMap(() => requestStream$(URL)),
-        //     map((res: any) => res.results),
-        //     tap((data) => this.setState({data, isLoading: false}))
-        // )
-        //     .subscribe();
+        sr$.pipe(
+            tap(() => this.setState({isLoading: true})),
+            switchMap(() => requestStream$(URL)),
+            map((res: any) => res.results),
+            tap((data) => this.setState({data, isLoading: false}))
+        )
+            .subscribe();
 
         // Нормально ли вообще, что сделал стрим из subject?
         // Сначала хотел просто через ajax, но нужно было до реквеста установить состояние прелоадера,
