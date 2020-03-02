@@ -1,4 +1,4 @@
-import {ajax, AjaxResponse} from "rxjs/ajax";
+import {ajax} from "rxjs/ajax";
 import {Observable, of} from "rxjs";
 import {failure, pending, RemoteData, success} from "@devexperts/remote-data-ts";
 import {catchError, map, startWith} from "rxjs/operators";

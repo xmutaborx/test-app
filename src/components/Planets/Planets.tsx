@@ -4,9 +4,7 @@ import {fold} from '@devexperts/remote-data-ts'
 import {SwapiResponse} from "../../services/api";
 
 export type TPlanetsProps = {
-    data: {
-        value: SwapiResponse
-    }
+    data: SwapiResponse
 }
 
 export class Planets extends React.PureComponent<TPlanetsProps, {}> {
@@ -67,7 +65,7 @@ export class Planets extends React.PureComponent<TPlanetsProps, {}> {
 
     render() {
         const {data} = this.props;
-        console.log(data)
+        console.log(data);
         return (
             <>
                 <Header/>
