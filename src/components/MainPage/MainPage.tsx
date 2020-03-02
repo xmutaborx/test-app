@@ -7,6 +7,7 @@ import { SEARCH_TYPES, API_URL } from "../../constants/constants";
 import {tap, map, switchMap} from "rxjs/operators";
 import { requestStream$ } from "../../services/api";
 import {Subject} from "rxjs";
+import {ajax} from "rxjs/ajax";
 
 // Как правильно описать searchType используя данные из константы SEARCH_TYPES ?
 
@@ -35,7 +36,7 @@ export class MainPage extends React.PureComponent<{}, TMainPageState> {
         const sr$ = new Subject();
         sr$.pipe(
             tap(() => this.setState({isLoading: true})),
-            switchMap(() => requestStream$(URL)),
+            switchMap(() => ajax.getJSON(URL)),
             map((res: any) => res.results),
             tap((data) => this.setState({data, isLoading: false}))
         )
@@ -45,7 +46,8 @@ export class MainPage extends React.PureComponent<{}, TMainPageState> {
         // Сначала хотел просто через ajax, но нужно было до реквеста установить состояние прелоадера,
         // пришлось оборачивать еще в один слой
 
-        sr$.next()
+        sr$.next();
+        sr$.unsubscribe();
     };
 
     searchToggleHandler = (e) => {

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Header } from "../Header/Header";
-import {fold} from '@devexperts/remote-data-ts'
+import {fold, RemoteData} from '@devexperts/remote-data-ts'
 import {SwapiResponse} from "../../services/api";
 
 export type TPlanetsProps = {
-    data: SwapiResponse
+    data: RemoteData<Error, SwapiResponse>
 }
 
 export class Planets extends React.PureComponent<TPlanetsProps, {}> {
@@ -65,7 +65,7 @@ export class Planets extends React.PureComponent<TPlanetsProps, {}> {
 
     render() {
         const {data} = this.props;
-        console.log(data);
+
         return (
             <>
                 <Header/>
@@ -74,8 +74,7 @@ export class Planets extends React.PureComponent<TPlanetsProps, {}> {
                     <div className={'row'}>
                         <div className="col s12">
                             <div className={'row'}>
-                                {/*{this.result(data)}*/}
-                                hui pizda
+                                {this.result(data)}
                             </div>
                         </div>
                     </div>

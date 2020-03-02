@@ -16,9 +16,18 @@ export type SwapiResponse = {
 }
 
 export const requestStream$ = (request: string): Observable<RemoteData<Error, SwapiResponse>> =>
-    ajax(request).pipe(
-        map(res => res.response),
-        map(data => success<SwapiResponse>(data)),
+    ajax.getJSON<SwapiResponse>(request).pipe(
+        map(data => ({
+            name: data.name,
+            rotation_period: data.rotation_period,
+            diameter: data.diameter,
+            climate: data.climate,
+            gravity: data.gravity,
+            terrain: data.terrain,
+            surface_water: data.surface_water,
+            population: data.population
+        })),
+        map(success),
         catchError(err => of(failure<Error>(err))),
         startWith(pending)
     );
