@@ -2,7 +2,6 @@ import {ajax} from "rxjs/ajax";
 import {Observable, of} from "rxjs";
 import {failure, pending, RemoteData, success} from "@devexperts/remote-data-ts";
 import {catchError, map, startWith} from "rxjs/operators";
-import {TPlanetsProps} from "../components/Planets/Planets";
 
 export type SwapiResponse = {
     name: string;

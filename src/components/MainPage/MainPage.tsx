@@ -1,15 +1,15 @@
+/* eslint-disable */
 import * as React from 'react';
 
 import { Header } from "../Header/Header";
 import { CardsList } from "../CardsList/CardsList";
-
 import { SEARCH_TYPES, API_URL } from "../../constants/constants";
 import {tap, map, switchMap} from "rxjs/operators";
-import { requestStream$ } from "../../services/api";
 import {Subject} from "rxjs";
 import {ajax} from "rxjs/ajax";
+import { themr } from 'react-css-themr';
 
-// Как правильно описать searchType используя данные из константы SEARCH_TYPES ?
+import * as css from './MainPage.module.scss';
 
 export type TMainPageState = {
     searchType: 'PLANETS' | 'CHARACTERS',
@@ -42,10 +42,6 @@ export class MainPage extends React.PureComponent<{}, TMainPageState> {
         )
             .subscribe();
 
-        // Нормально ли вообще, что сделал стрим из subject?
-        // Сначала хотел просто через ajax, но нужно было до реквеста установить состояние прелоадера,
-        // пришлось оборачивать еще в один слой
-
         sr$.next();
         sr$.unsubscribe();
     };
@@ -56,10 +52,11 @@ export class MainPage extends React.PureComponent<{}, TMainPageState> {
 
     render() {
         const {data, isLoading, searchType} = this.state;
+        console.log(css);
         return (
             <>
                 <Header/>
-                <div className={'content'}>
+                <div className={'container'}>
                     <h3>STAR WARS API TEST</h3>
                     <div className={'row'}>
                         <div className="col s12">
@@ -120,3 +117,5 @@ export class MainPage extends React.PureComponent<{}, TMainPageState> {
         )
     }
 }
+
+// export const MainPageTheme = themr(Symbol(), css)(MainPage);

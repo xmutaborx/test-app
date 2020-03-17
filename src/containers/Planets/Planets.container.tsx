@@ -3,7 +3,7 @@ import { requestStream$ } from '../../services/api'
 
 import { withRX } from '@devexperts/react-kit/dist/utils/with-rx2'
 import {Planets, TPlanetsProps} from '../../components/Planets/Planets';
-import {SwapiResponse} from "../../services/api";
+
 import {API_URL} from "../../constants/constants";
 import {initial} from "@devexperts/remote-data-ts/dist/remote-data";
 

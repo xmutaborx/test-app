@@ -1,6 +1,8 @@
+/* eslint-disable */
 import * as React from 'react';
 import {fromNullable, none, option, Option, some} from "fp-ts/lib/Option";
 import { sequenceT } from "fp-ts/lib/Apply";
+
 
 //______________________________________
 const first: Option<number> = some(3);
@@ -43,7 +45,7 @@ const addNullableDeclarative = (a: Option<number>, b: Option<number>, c: Option<
         .alt(defaultValue);
 };
 
-console.log(addNullableDeclarative(first, second, third, fourth));
+// console.log(addNullableDeclarative(first, second, third, fourth));
 //______________________________________
 
 const SESSION_KEY: string = `TEST_KEY`;

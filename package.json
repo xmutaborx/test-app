@@ -14,15 +14,19 @@
     "@types/node": "^12.12.26",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
+    "css-loader": "^3.4.2",
     "fp-ts": "1.12.1",
     "history": "^4.10.1",
     "react": "^16.12.0",
+    "react-css-modules": "^4.7.11",
+    "react-css-themr": "^2.1.2",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.0",
     "rxjs": "^6.5.4",
     "typelevel-ts": "^0.4.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "typings-for-css-modules-loader": "^1.7.0"
   },
   "scripts": {
     "start": "react-scripts start",

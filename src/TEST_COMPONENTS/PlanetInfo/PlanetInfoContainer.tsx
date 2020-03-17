@@ -1,8 +1,9 @@
+/* eslint-disable */
 import * as React from 'react'
 import {TPlanetInfoProps} from "./PlanetInfo";
 import {getPlanetInfoData} from './PlanetInfoService'
-import {map, tap, take} from "rxjs/operators"
-import {merge, Subscription} from "rxjs";
+import {map, tap} from "rxjs/operators"
+import {Subscription} from "rxjs";
 import {PlanetInfo} from "./PlanetInfo";
 
 export class PlanetInfoContainer extends React.PureComponent<{}, TPlanetInfoProps> {

@@ -14,6 +14,7 @@ export const Header = () => {
                     <Link to={"/fp-test"}>Fp test</Link>
                     <Link to={"/rx"}>Rx</Link>
                     <Link to={"/planetinfo"}>Planet Info</Link>
+                    <Link to={"/Frisby"}>Frisby</Link>
                 </div>
             </nav>
         </div>

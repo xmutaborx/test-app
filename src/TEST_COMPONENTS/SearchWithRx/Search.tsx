@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as React from 'react';
 import './Search.css';
 
@@ -116,7 +117,7 @@ export class Search extends React.PureComponent<{}, TSearchState> {
                 <div className={"search__container content row"}>
                     {isLoading && (
                         <div className="progress">
-                            <div className="indeterminate"></div>
+                            <div className="indeterminate"/>
                         </div>
                     )}
                     {users[0].id !== 0 && canIShow && users.map(item =>
